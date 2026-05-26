@@ -1,0 +1,8 @@
+find ~/.emacs.d/ -name '*.eln' -delete
+git reset --hard HEAD
+git clean -f -d -x
+rm -fr .git/hooks/*
+gcc -march=native -Q --help=target | grep march
+# autogen.sh ...
+export CFLAGS="-O2 -pipe -march=native -mtune=native -fno-omit-frame-pointer -fno-plt -flto=auto"
+export LDFLAGS="-Wl,-O2 -Wl,-z,now -Wl,-z,relro -Wl,--sort-common -Wl,--as-needed -Wl,-z,pack-relative-relocs -flto=auto -O2"
