@@ -1,0 +1,35 @@
+#+TITLE: dash
+#+SETUPFILE: clean.theme
+
+#+begin_src emacs-lisp :eval no
+  (org-id-hash-to-alist (org-id-locations-load))
+#+end_src
+
+* sys
+:PROPERTIES:
+:ID:       a5f2a61a-57d8-4ea7-9f9f-6cfc3a52b533
+:END:
+
+** virt
+:PROPERTIES:
+:ID:       d380e9b7-b2d5-427d-a9f9-f0f70bb19ad9
+:END:
+#+begin_src shell :results output replace :shebang #!/usr/bin/env nu :exports both
+  podman machine list
+#+end_src
+
+#+RESULTS:
+: NAME                     VM TYPE     CREATED        LAST UP     CPUS        MEMORY      DISK SIZE
+: podman-machine-default*  qemu        14 months ago  Never       4           8GiB        100GiB
+
+#+begin_src shell :results output replace :shebang #!/usr/bin/env nu :exports both
+  podman container list
+#+end_src
+
+#+RESULTS:
+: CONTAINER ID  IMAGE       COMMAND     CREATED     STATUS      PORTS       NAMES
+
+* srv
+:PROPERTIES:
+:ID:       91df41a2-b7f2-447c-8ec0-05ef92a71154
+:END:

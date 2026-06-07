@@ -1,0 +1,201 @@
+#+TITLE: babel
+#+SETUP_FILE: ~/comp/meta/ox.setup
+#+PROPERTY: header-args :eval never-export
+* snippet
+:PROPERTIES:
+:ID:       b40f586a-efb8-4706-b5d4-6129239fa50a
+:END:
+** make-header
+:PROPERTIES:
+:ID:       8c91f02b-f59a-4651-899a-e73cae5535e6
+:END:
+#+name: make-header
+#+begin_src makefile
+MAKEFLAGS += --warn-undefined-variables
+.DELETE_ON_ERROR:
+#+end_src
+** make-list
+:PROPERTIES:
+:ID:       72e82fbb-527f-4317-9000-af3abead2a06
+:END:
+ #+name: make-list
+ #+begin_src makefile
+ _list: #requires xargs awk egrep
+	 @$(MAKE) -pRrq -f ; \
+	 $(lastword $(MAKEFILE_LIST)) : \
+		 2>/dev/null | awk -v RS= -F: \
+		 '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' \
+		 | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
+ #+end_src
+** make-demon
+:PROPERTIES:
+:ID:       0ef6ce7d-b0b4-480e-82e2-d6f96217f689
+:END:
+ #+name: make-demon
+ #+begin_src makefile
+ .EXPORT_ALL_VARIABLES:
+ DEMON:=$(shell echo ${USER} | tr 'A-Za-z' 'N-ZA-Mn-za-m')dm
+ STAMP:=$(STAMP)
+
+ .PHONY: _dmadd _dmkill
+
+ _dmadd:useradd $(DEMON) -G demon;\
+   mkdir -p $(STAMP)/dm/.h/$(DEMON);\
+   chown -R $(DEMON):demon $(STAMP)/dm/.h/$(DEMON);\
+   install -C -m 775 -o $(DEMON) -g demon $(STAMP) $(STAMP)/dm/.h/$(DEMON)
+
+ _dmkill:userdel -f -r $(DEMON);\
+   rm -rf $(STAMP)/dm/.h/$(DEMON)
+
+ .DEFAULT_GOAL := #reset default
+
+ #+end_src
+
+** js-copy-link-id
+:PROPERTIES:
+:ID:       1c2ece91-bb85-43a2-bda5-b4ff13629011
+:END:
+#+name: copy-link-id
+#+begin_src js
+function Copy() {
+  var Url = document.getElementById("url_id");
+  Url.innerHTML = window.location.href;
+  console.log(Url.innerHTML)
+  Url.select();
+  document.execCommand("copy");
+}
+#+end_src
+
++ example -- \\
+  #+begin_src html
+<div>
+  <input type="button" value="Copy Url" onclick="Copy();" />
+  <br /> Paste: <textarea id="url_id" rows="1" cols="30"></textarea>
+</div>
+  #+end_src
+** extract
+:PROPERTIES:
+:ID:       7e871ce1-203d-48a8-b5da-801bdd1467ef
+:END:
+#+name: extract(f)
+#+begin_src sh
+    if [ -f $f ] ; then
+	case $f in
+	    ,*.tar.bz2)        tar xjf $f        ;;
+	    ,*.tar.gz)         tar xzf $f        ;;
+	    ,*.bz2)            bunzip2 $f       ;;
+	    ,*.rar)            unrar x $f        ;;
+	    ,*.gz)             gunzip $f         ;;
+	    ,*.tar)            tar xf $f         ;;
+	    ,*.tbz2)           tar xjf $f        ;;
+	    ,*.tgz)            tar xzf $f        ;;
+	    ,*.zip)            unzip $f          ;;
+	    ,*.Z)              uncompress $f     ;;
+	    ,*.7z)             7zr e $f          ;;
+	    ,*)                echo "'$f' cannot be extracted via extract()" ;;
+	esac
+    else
+	echo "'$f' is not a valid file"
+    fi
+#+end_src
+** org-capture-stdout
+:PROPERTIES:
+:ID:       93c42321-4a1a-46cc-9af7-f94ebf1515f6
+:END:
+#+name: org-capture-stdout
+#+begin_src shell :tangle yes
+  #!/bin/bash
+
+  TITLE="$*"
+  CONTENT="
+       ,#+BEGIN_EXAMPLE
+  $(cat | sed 's/^/     /g')
+       ,#+END_EXAMPLE
+  "
+
+  if [[ -n $TITLE ]]
+  then
+      CONTENT="   - ${TITLE}\n${CONTENT}"
+  fi
+
+  /usr/local/bin/emacsclient -c -n \
+                             -e "(progn (org-capture-string \"$CONTENT\" \"3\") (delete-frame))"
+#+end_src
+
+#+RESULTS: org-capture-stdout
+
+** colsum-if
+:PROPERTIES:
+:ID:       6b5a270a-7296-4e44-934f-de23df03bebe
+:END:
+sum values in vallist if the corresponding key matches the keymatch
+argument
+#+name: colsum-if
+#+begin_src elisp :var keylist=() vallist=() keymatch=()
+  (cl-loop for key in keylist
+	   for val in vallist
+	   when (equal key keymatch)
+	   sum (string-to-number val))
+#+end_src
+
+#+RESULTS: colsum-if
+: 0
+
+
+* script
+:PROPERTIES:
+:ID:       e61e7065-633f-468c-a30f-e90acda122a5
+:END:
+** sys
+:PROPERTIES:
+:ID:       44954f05-3da9-4921-8653-e2e3c0b35aeb
+:END:
+*** inotify
+:PROPERTIES:
+:ID:       d2fd86b8-4342-4a50-93dc-f3d9eda3dd07
+:END:
+requires inotify-tools
+#+name: inotify-watch-dir
+#+begin_src shell :var path="." :session t :results output :async
+inotifywait -m  $path -e create -e moved_to |
+    while read dir action file; do
+	echo "The file '$file' appeared in directory '$dir' via '$action'"
+    done
+#+end_src
+
+#+RESULTS: inotify-watch-dir
+: 02cfacb7-5726-49f0-bd67-a07eb37db5a2
+
+** os
+:PROPERTIES:
+:ID:       136a6c58-7846-404a-ab38-5fe85b37a0ed
+:END:
+*** macos
+:PROPERTIES:
+:ID:       54c1781f-ba60-4cb2-93df-a337db4d921c
+:END:
+#+name: macos-init
+#+begin_src sh
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+brew install openssl cmake
+curl https://sh.rustup.rs -sSf | sh
+source ~/.cargo/env
+#+end_src
+** http-server
+:PROPERTIES:
+:ID:       189516b2-e0e2-4fc3-a704-84e96fbd12cf
+:END:
+#+name: http-server
+#+begin_src python
+from http.server import HTTPServer, SimpleHTTPRequestHandler, test
+import sys
+
+class RequestHandler(SimpleHTTPRequestHandler):
+    def end_headers(self):
+        self.send_header('Cross-Origin-Opener-Policy', 'same-origin')
+        self.send_header('Cross-Origin-Embedder-Policy', 'require-corp')
+        SimpleHTTPRequestHandler.end_headers(self)
+
+if __name__ == '__main__':
+    test(RequestHandler, HTTPServer, port=int(sys.argv[1]) if len(sys.argv) > 1 else 8000)
+#+end_src
