@@ -1,0 +1,288 @@
+#+title: net
+#+author: Richard Westhaver
+#+setupfile: ../../../clean.theme
+=net= is the core networking library. Various Protocols and
+network-specific codecs are supported in the =NET/PROTO= and
+=NET/CODEC= mods respectively including =SWANK=, =DNS=, =OSC=, and
+=HTTP=. The =NET/SRV= mod provides network-backed services based on
+the =OBJ/SRV= protocol.
+
+In general we /prefer/ UDP sockets, especially for internal
+communications, but the most common modules used are likely =NET/REQ=
+which provides http/s client support and =NET/SRV/HTTP= which provides
+http/s server support.
+
+* Packages
+:PROPERTIES:
+:ID:       ba7e1e86-b56f-439f-a8f6-7c90af0b4f7f
+:CREATED:  <2025-07-06 Sun 21:57>
+:END:
+** core
+:PROPERTIES:
+:ID:       040f67f5-901e-4686-a9c6-54aa245eeacf
+:CREATED:  <2025-07-06 Sun 21:58>
+:END:
+The core network package provides base protocol definitions including
+conditions, generic functions, and classes. In general our approach is
+to extend =SB-BSD-SOCKETS=, not replace it, and to mix in a very
+minimal API which resembles that of =USOCKET=. Most objects (including
+sockets) can be configured via the =OBJ/CONFIG= protocol.
+
+Similar to =IO/STREAM= and in the case of =STREAM-SOCKET= actually
+subclassing it, we provide a =WRAPPED-SOCKET= class which contains the
+underlying =SB-BSD-SOCKETS= class - either =INET-SOCKET= or
+=INET6-SOCKET=.
+
+#+CALL: lisp-package-symbols[:post transpose]("NET/CORE")
+
+#+RESULTS:
+| SOCKOPT-DEBUG                   |
+| HOST-ENT-ALIASES                |
+| SOCKOPT-TCP-USER-TIMEOUT        |
+| SOCKET-ACCEPT                   |
+| SOCKOPT-KEEP-ALIVE              |
+| WITH-UDP-CLIENT                 |
+| *DEFAULT-BACKLOG*               |
+| INET6-SOCKET                    |
+| SOCKET-CLOSE                    |
+| INET-SOCKET                     |
+| WITH-OPEN-SOCKET                |
+| SOCKET-TYPE-NOT-SUPPORTED-ERROR |
+| PEER                            |
+| *DEFAULT-READ-TIMEOUT*          |
+| STREAM-SOCKET                   |
+| WRAPPED-SOCKET                  |
+| SOCKOPT-BROADCAST               |
+| DEFAULT-INET-ADDRESS-FAMILY     |
+| CONNECTION-REFUSED-ERROR        |
+| SOCKOPT-SEND-BUFFER             |
+| CONNECTION-PENDING-MESSAGES     |
+| BAD-FILE-DESCRIPTOR-ERROR       |
+| UNKNOWN-PROTOCOL                |
+| SOCKOPT-ERROR                   |
+| NETDB-SUCCESS-ERROR             |
+| UNPRIVILEGED-PORT               |
+| NETDB-INTERNAL-ERROR            |
+| SOCKOPT-REUSE-ADDRESS           |
+| UNIX-SOCKET-CONFIG              |
+| HOST-ENT-ADDRESSES              |
+| DRAIN-PENDING-MESSAGES          |
+| SOCKOPT-PASS-CREDENTIALS        |
+| ADDRESSES-IN-SAME-NETWORK-P     |
+| WITH-UNIX-SERVER                |
+| ENDPOINT                        |
+| PRIVILEGED-PORT                 |
+| CLIENT                          |
+| HOST-ENT-NAME                   |
+| GET-ADDRESS-BY-NAME             |
+| SOCKET-ERROR                    |
+| SOCKOPT-TCP-KEEPCNT             |
+| *WILDCARD-PORT*                 |
+| WITH-SOCKET                     |
+| INTERRUPTED-ERROR               |
+| SOCKOPT-RECEIVE-LOW-WATER       |
+| SOCKOPT-PRIORITY                |
+| SOCKET-OPEN-P                   |
+| NO-RECOVERY-ERROR               |
+| ADDRESS-IN-USE-ERROR            |
+| MAKE-SERVER-RESPONSE            |
+| SEND-MESSAGE                    |
+| SOCKET-PROTOCOL                 |
+| ROUTER                          |
+| OPERATION-TIMEOUT-ERROR         |
+| CONNECT                         |
+| SOCKOPT-TCP-KEEPIDLE            |
+| WITH-CLIENT-SERVER              |
+| SOCKET-SEND                     |
+| SOCKOPT-TCP-NODELAY             |
+| SOCKET-TYPE                     |
+| SOCKOPT-TCP-KEEPINTVL           |
+| UNIX-ECHO                       |
+| ROUTE                           |
+| SOCKET                          |
+| UNIX-SOCKET                     |
+| MAKE-CLIENT-REQUEST             |
+| SOCKOPT-TYPE                    |
+| TCP-SOCKET                      |
+| PING                            |
+| HOST-ENT                        |
+| SOCKOPT-SEND-LOW-WATER          |
+| NET-ERROR                       |
+| UDP-CONFIG                      |
+| WITH-TCP-CLIENT                 |
+| SOCKET-DISCONNECT               |
+| SOCKET-PEERNAME                 |
+| OUT-OF-MEMORY-ERROR             |
+| OPERATION-NOT-SUPPORTED-ERROR   |
+| SOCKET-FILE-DESCRIPTOR          |
+| UDP-SOCKET                      |
+| HOST-NOT-FOUND-ERROR            |
+| CONNECTION-NEXT-SERIAL          |
+| MAKE-SERVER                     |
+| UDP-ECHO                        |
+| SOCKET-BIND                     |
+| MAKE-INET6-ADDRESS              |
+| NET-CONDITION                   |
+| MAKE-SOCKET                     |
+| MAKE-INET-ADDRESS               |
+| FREE-SOCKADDR-FOR               |
+| ADDRESS-IN-NETWORK-P            |
+| *DEFAULT-CONNECT-TIMEOUT*       |
+| SOCKOPT-OOB-INLINE              |
+| *DEFAULT-USER-AGENT*            |
+| GET-HOST-BY-NAME                |
+| UDP-RECEIVE-PING                |
+| SOCKET-LISTEN                   |
+| HOST-ENT-ADDRESS-TYPE           |
+| SOCKOPT-DONT-ROUTE              |
+| SOCKOPT-BIND-TO-DEVICE          |
+| INVALID-ARGUMENT-ERROR          |
+| CONNECTION-SERVER-ID            |
+| *PING-SIZE*                     |
+| NAME-SERVICE-ERROR              |
+| LOCAL-SOCKET                    |
+| SIZE-OF-SOCKADDR                |
+| SERVER                          |
+| IP-ADDRESS                      |
+| HOST-ENT-ADDRESS                |
+| GET-PROTOCOL-BY-NAME            |
+| LOCAL-ABSTRACT-SOCKET           |
+| GET-HOST-BY-ADDRESS             |
+| WAIT-FOR-REPLY                  |
+| MAKE-SOCKADDR-FOR               |
+| NET-WARNING                     |
+| SOCKET-CONFIG                   |
+| SOCKOPT-BSD-COMPATIBLE          |
+| PROXY                           |
+| UNIX-RECEIVE-PING               |
+| DATAGRAM-SOCKET                 |
+| ADDRESS-NETWORK-CLASS           |
+| SERVER-CONFIG                   |
+| TCP-CONFIG                      |
+| SOCKET-RECEIVE                  |
+| ADDRESS-PRIVATE-P               |
+| FIND-PORT                       |
+| NOT-CONNECTED-ERROR             |
+| WITH-OPEN-CONNECTION            |
+| SOCKET-FAMILY                   |
+| SOCKET-SHUTDOWN                 |
+| CLIENT-CONFIG                   |
+| ENSURE-NETMASK                  |
+| SOCKOPT-RECEIVE-BUFFER          |
+| *DEFAULT-MTU*                   |
+| WITH-UDP-SERVER                 |
+| SOCKET-NAME                     |
+| RECEIVE-MESSAGE-NO-HANG         |
+| PORT                            |
+| *WILDCARD-HOST*                 |
+| *IPV6*                          |
+| PROTOCOL-NOT-SUPPORTED-ERROR    |
+| MAKE-CLIENT                     |
+| ADDRESS                         |
+| DISCONNECT                      |
+| NETWORK-UNREACHABLE-ERROR       |
+| TCP-RECEIVE-PING                |
+| TCP-ECHO                        |
+| BITS-OF-SOCKADDR                |
+| NON-BLOCKING-MODE               |
+| OPERATION-NOT-PERMITTED-ERROR   |
+| NET-CONFIG                      |
+| SOCKET-CONNECT                  |
+| MAKE-INET-SOCKET                |
+| SOCKET-ADDRESS                  |
+| FAMILY                          |
+| GET-ADDRESS                     |
+| NO-BUFFERS-ERROR                |
+| MAKE-NETMASK                    |
+| *LOCALHOST*                     |
+| TCP-PING-SERVER                 |
+| ADDRESS-FAMILY-NOT-SUPPORTED    |
+| CONNECTION                      |
+| WITH-UNIX-CLIENT                |
+| WITH-SOCKET-STREAM              |
+| NETLINK-SOCKET                  |
+| *DEFAULT-PROXY*                 |
+| OPERATION-IN-PROGRESS           |
+| IPV4-NETWORK                    |
+| SOCKET-MAKE-STREAM              |
+| TRY-AGAIN-ERROR                 |
+
+** codec
+:PROPERTIES:
+:ID:       ff7b9d7c-d2b3-40ae-abca-9daafd16129f
+:CREATED:  <2025-07-06 Sun 21:57>
+:END:
+** proto
+:PROPERTIES:
+:ID:       124e45e8-7e2f-4d7b-8913-5533100ede8d
+:CREATED:  <2025-07-06 Sun 21:58>
+:END:
+** srv
+:PROPERTIES:
+:ID:       e653aa30-a016-4b6e-8674-24685409c400
+:CREATED:  <2025-07-06 Sun 21:58>
+:END:
+** cookie
+:PROPERTIES:
+:ID:       70182aad-ae4c-40d2-b674-0a238b23d625
+:CREATED:  <2025-07-06 Sun 21:58>
+:END:
+
+#+CALL: lisp-package-symbols[:post transpose]("NET/COOKIE")
+
+#+RESULTS:
+| COOKIE-EQUAL              |
+| PARSE-SET-COOKIE-HEADER   |
+| COOKIE-EXPIRES            |
+| COOKIE-JAR-HOST-COOKIES   |
+| COOKIE-CREATION-TIMESTAMP |
+| COPY-COOKIE               |
+| COOKIE-JAR-COOKIES        |
+| COOKIE-MAX-AGE            |
+| COOKIE-DOMAIN             |
+| STRINGIFY-COOKIE          |
+| COOKIE-VALUE              |
+| COOKIE-ORIGIN-HOST        |
+| WRITE-SET-COOKIE-HEADER   |
+| COOKIE                    |
+| COOKIE-P                  |
+| WRITE-COOKIE-HEADER       |
+| COOKIE-SAME-SITE          |
+| COOKIE-PATH               |
+| MERGE-COOKIES             |
+| MAKE-COOKIE               |
+| COOKIE-HTTPONLY-P         |
+| COOKIE-JAR                |
+| COOKIE-PARTITIONED        |
+| MAKE-COOKIE-JAR           |
+| COOKIE-DATE               |
+| COOKIE-NAME               |
+| COOKIE=                   |
+| COOKIE-SECURE-P           |
+
+** req
+:PROPERTIES:
+:ID:       866c84fd-e8b2-4ea5-ac6c-dfdaa0cc583f
+:CREATED:  <2025-07-06 Sun 21:58>
+:END:
+
+#+CALL: lisp-package-symbols[:post transpose]("NET/REQ")
+
+#+RESULTS:
+| PUT                   |
+| DELETE                |
+| GET                   |
+| RETRY-REQUEST         |
+| FETCH                 |
+| *VERBOSE*             |
+| POST                  |
+| IGNORE-AND-CONTINUE   |
+| +SOCKS5-VERSION+      |
+| REQUEST               |
+| PATCH                 |
+| MAKE-CONNECTION-POOL  |
+| HEAD                  |
+| HTTP-CLIENT           |
+| *USE-CONNECTION-POOL* |
+| *CONNECTION-POOL*     |
+| CLEAR-CONNECTION-POOL |

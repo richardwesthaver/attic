@@ -1,0 +1,10 @@
+#+title: vc
+#+author: Richard Westhaver
+#+setupfile: ../../../clean.theme
+#+OPTIONS: num:nil
+
+=vc= is our interface to Version Control Systems (Mercurial and
+Git). Mercurial is the default and preferred backend, as can be seen
+in all CC code repos. But there is a high level of support for working
+with Git repositories using a shared /vc protocol/ as well as
+mirroring and converting between both backends.

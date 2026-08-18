@@ -1,0 +1,58 @@
+#+title: alien
+#+author: Richard Westhaver
+#+setupfile: ../../../clean.theme
+#+OPTIONS: num:nil
+This doc is about the ~alien~ ([[id:203517c3-8324-471e-b932-56ead04d8e1a][FFI]]) features of the =core=.
+
+* Systems
+:PROPERTIES:
+:ID:       1eb797dc-d617-46cc-89e8-7b6103e526d2
+:END:
+The following core /alien systems/ are provided with supporting
+code.
+** xkb
+:PROPERTIES:
+:ID:       79b3a686-efe9-411e-9d1e-358113622949
+:END:
+These bindings are actually directed at libxkbcommon instead of
+x11/xkb directly.
+*** xkbcommon
+:PROPERTIES:
+:ID:       9b9be592-1314-4926-940a-908ff4844e29
+:END:
+https://xkbcommon.org/doc/current/md_doc_2quick-guide.html
+** rocksdb
+:PROPERTIES:
+:ID:       5a1fd665-b72a-4d62-af4c-4967825f69c6
+:END:
+[[https://github.com/facebook/rocksdb/wiki][RocksDB Wiki]]
+
+** btrfs
+:PROPERTIES:
+:ID:       6b3dc423-0e1c-458d-9f8e-bf7456f9a048
+:END:
+The kernel headers btrfs and btrfs_tree will be wrapped at some point
+in addition to the userspace library (btrfsutil) documented below.
+
+*** btrfsutil
+:PROPERTIES:
+:ID:       7296995d-2b67-45ec-94d9-8fe23126a602
+:END:
+https://github.com/kdave/btrfs-progs
+** uring
+:PROPERTIES:
+:ID:       c0750228-7ba8-445a-8790-ca0310cf0a7d
+:END:
+https://man.archlinux.org/man/io_uring.7.en
+
+** zstd
+:PROPERTIES:
+:ID:       6dbfed55-0d07-4090-bc3b-ea9317d9bfe5
+:END:
+zstd compression bindings: https://github.com/facebook/zstd
+
+** tree-sitter
+:PROPERTIES:
+:ID:       8527c382-ae65-4ad9-8f70-9ff5c6b152f0
+:END:
+bindings to tree-sitter parser generator and language libraries: https://github.com/tree-sitter/tree-sitter

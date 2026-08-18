@@ -1,0 +1,32 @@
+#+title: syn
+#+author: Richard Westhaver
+#+setupfile: ../../../clean.theme
+* Packages
+:PROPERTIES:
+:ID:       2ec0ef2a-dfa2-44b6-9707-6f6732c934f1
+:CREATED:  <2025-08-20 Wed 22:58>
+:END:
+
+
+** Lang
+:PROPERTIES:
+:ID:       7825063e-cc37-414e-ab69-abdba437c036
+:CREATED:  <2025-08-20 Wed 22:59>
+:END:
+The lang subsystem contains Language-specific packages. Loading these
+packages will ensure the environment is capable of parsing and
+generating the designated lang to and from =AST= objects.
+
+** Gen
+:PROPERTIES:
+:ID:       81f76022-dce6-4a0a-84cc-4a35b5858fa1
+:CREATED:  <2025-08-20 Wed 22:58>
+:END:
+Our Lisp code generator.
+
+** Lint
+:PROPERTIES:
+:ID:       026f0c1c-d3fd-421f-a546-49ca39e7be64
+:CREATED:  <2025-08-20 Wed 22:59>
+:END:
+Our Lisp code linter.

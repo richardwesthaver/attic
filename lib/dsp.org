@@ -1,0 +1,45 @@
+#+title: dsp
+#+author: Richard Westhaver
+#+email: ellis@compiler.company
+#+description: Digital Signal Processing Library
+#+filetags: lisp media audio dsp
+#+setupfile: ../../../clean.theme
+
+The =dsp= library provides a reasonably high-level interface for
+working with =audio= and =video= data.
+
+* WIP Audio
+:PROPERTIES:
+:ID:       3763c8d5-d35f-4376-b43e-36ced3e19165
+:CREATED:  <2025-07-06 Sun 21:21>
+:END:
+The =dsp/aud= package contains all audio-specific symbols.
+
+* TODO Video
+:PROPERTIES:
+:ID:       620a066f-f8be-407d-8fc4-f4a7ae919f1a
+:CREATED:  <2025-07-06 Sun 21:21>
+:END:
+:LOGBOOK:
+- State "TODO"       from              [2025-07-06 Sun 21:22]
+:END:
+The =dsp/vid= package contains all video-specific symbols.
+* Media
+:PROPERTIES:
+:ID:       ca8821d5-5d31-4ffc-89cf-f1316c6125fc
+:CREATED:  <2025-07-06 Sun 21:22>
+:END:
+A logical pathname specifically for /media files/ is defined for
+convenience and may be extended or modified by the user.
+
+#+begin_src lisp
+  (logical-pathname-translations "MEDIA")
+#+end_src
+
+#+RESULTS:
+: (("HOME;**;*.*.*" #P"/var/opt/media/")
+:  ("MUSIC;**;*.*.*" #P"/var/opt/media/music/**/*.*")
+:  ("AUD;**;*.*.*" #P"/var/opt/media/aud/**/*.*")
+:  ("VID;**;*.*.*" #P"/var/opt/media/vid/**/*.*")
+:  ("IMG;**;*.*.*" #P"/var/opt/media/img/**/*.*")
+:  ("SCREENSHOT;**;*.*.*" #P"/var/opt/media/screenshot/**/*.*"))

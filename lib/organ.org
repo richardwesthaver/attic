@@ -1,0 +1,24 @@
+#+title: organ
+#+author: Richard Westhaver
+#+setupfile: ../../../clean.theme
+
+=organ= is a library for extracting information from Org Mode
+files. It's highly opinionated and only suited for parsing CC
+documents. This means I may introduce syntax which is not supported by
+or which can't be interpreted by Emacs Org-Mode. It also means that
+/the complete Org-element API will not be supported/. The most
+troublesome of org-mode features are simply ignored.
+
+This project is driven by the idea that org-mode is pretty cool, but
+that previous attempts to build a robust parser implementation have
+been hindered by their attempts to clone the functionality as well.
+
+- *Goals*
+  - org-ast :: take org-mode stream output S-expression AST,
+    similar to org-element
+  - parallel :: take advantage of multi-threading to process multiple
+    documents concurrently
+  - composable :: specialized methods for combining and composing
+    org-mode nodes
+  - interactive :: make org-mode accessible in the REPL possibly with
+    read macros

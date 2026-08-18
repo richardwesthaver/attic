@@ -1,0 +1,31 @@
+;;; ppcre.sys --- PPCRE System Definitions
+(defsys :ppcre
+ :version "2.1.2"
+ :description "Perl-compatible regular expression library"
+ :components 
+ ((:file "pkg")
+  (:file "var")
+  (:file "util")
+  (:file "errors")
+  (:file "charset")
+  (:file "charmap")
+  (:file "chartest")
+  (:file "lexer")
+  (:file "parser")
+  (:file "regex-class")
+  (:file "regex-class-util")
+  (:file "convert")
+  (:file "optimize")
+  (:file "closures")
+  (:file "repetition-closures")
+  (:file "scanner")
+  (:file "api"))
+ :provide
+ ((:tests
+   :description "Perl-compatible regular expression library tests"
+   :components 
+   ((:mod "tests"
+     :components 
+     ((:file "pkg")
+      (:file "tests")
+      (:file "perl-tests")))))))

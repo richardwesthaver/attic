@@ -1,0 +1,110 @@
+#+title: log
+#+author: Richard Westhaver
+#+setupfile: ../../../clean.theme
+#+OPTIONS: num:nil
+The =log= library provides a unified logging interface shared by core
+libraries and apps.
+
+* Log Levels
+:PROPERTIES:
+:ID:       100f72f6-5a54-4da5-b1b7-2714c5f3eb99
+:CREATED:  <2025-07-06 Sun 19:40>
+:END:
+A /log level/ is a symbol which may be used as the value of the
+=*log-level*= variable, which determines the current level of
+verbosity.
+
+All possible values of =*log-level*= are stored in the =*log-levels*=
+variable:
+
+#+begin_src lisp :package log
+  *log-levels*
+#+end_src
+
+#+RESULTS:
+| :FATAL | :ERROR | :WARN | :INFO | :DEBUG | :TRACE |
+
+Note that the actual position of log-levels in the =*log-level*=
+vector implies the /precedence/ of that level. For example =:trace=
+has the lowest precedence, and will not be printed unless the
+=*log-level*= is either =:trace= or ~t~. =:fatal= hash the highest
+precence and will /always/ be printed unless =*log-level*= is eql to
+~nil~.
+
+* Loggers
+:PROPERTIES:
+:ID:       c40c1d65-282d-4cd9-b589-f1d0ff6cdb1e
+:CREATED:  <2025-07-06 Sun 19:47>
+:END:
+The =logger= class implements the multi-threaded object-based logging
+protocol which is built atop the =std/pipe= protocol.
+
+#+begin_src lisp :package log
+  (documentation 'logger 'type)
+#+end_src
+
+#+RESULTS:
+: A class which implements logging functionality. An instance of this class may
+: be designated as the 'global' logger by setting the value of *LOGGER*, or may
+: be implemented for a specific application. Loggers are async-friendly and will
+: create their own dedicated thread when started.
+
+#+begin_src lisp :package log
+  (sb-mop:class-direct-superclasses (find-class 'logger))
+#+end_src
+
+#+RESULTS:
+: (#<STANDARD-CLASS STD/PIPE:PIPE>)
+
+The global =*logger*= variable defaults to nil - it is up to the user
+to build a logger instance and =start= it. When there is no global
+logger set, the [[id:f4fb6ed4-41d3-4c9b-9038-7a3d066b3fa8][Logging Functions]] will print to =*trace-output*=
+directly while still respecting the =*log-level*=.
+
+** Configuration
+:PROPERTIES:
+:ID:       e603b955-6519-4939-9fa8-e3175879673a
+:CREATED:  <2025-07-06 Sun 20:09>
+:END:
+When setting up logging for your application, it is recommended to
+subclass the =logger-config= class, which implements the =obj/config=
+protocol.
+
+#+begin_src lisp :results output :package log
+  (describe (default-logger-config))
+#+end_src
+
+#+RESULTS:
+: #<LOGGER-CONFIG {1219092D13}>
+:   [standard-object]
+: 
+: Slots with :INSTANCE allocation:
+:   AST                            = ((LEVEL-FILTER :ID :LEVEL-FILTER :LEVEL :DEBUG) (STREAM-SINK))
+:   SIZE                           = 10
+:   LEVEL                          = :DEBUG
+
+The =ast= slot stores an unevaluated =pipe= used to initialized the
+logger resulting from the =build= method.
+
+#+begin_src lisp :results replace :package log
+  (ast (default-logger-config))
+#+end_src
+
+#+RESULTS:
+| LEVEL-FILTER | :ID | :LEVEL-FILTER | :LEVEL | :DEBUG |
+| STREAM-SINK  |     |               |        |        |
+
+* Logging Functions
+:PROPERTIES:
+:ID:       f4fb6ed4-41d3-4c9b-9038-7a3d066b3fa8
+:CREATED:  <2025-07-06 Sun 19:41>
+:END:
+There are two logging functions to keep in mind for each log level - a
+/predicate/ and a /printer/. Using the =:info= log-level as an example
+the predicate is =info-p= and the printer is =info!=.
+
+The predicate functions accept no arguments and check the current
+precedence of =*log-level*=, returning ~t~ if the associated printer
+has an equal to or higher precedence than the current level and thus
+should print messages. For example the =info-p= function will return
+~t~ when =*log-level*= is one of =:info=, =:debug=, =:trace=, or ~t~.
